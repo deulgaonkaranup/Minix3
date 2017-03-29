@@ -48,7 +48,7 @@ template<typename type> void linkedList<type>::increment(){
 template<typename type> void linkedList<type>::removeCurrent(){
 	if(prev == NULL){
 		Node<type> *n = curr;
-		curr = curr->next;
+		begin = curr = curr->next;
 		free(n);
 	}else{
 		prev->next = curr->next;

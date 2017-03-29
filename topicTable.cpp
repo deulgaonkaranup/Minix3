@@ -223,6 +223,7 @@ bool __getMessage__(int index,int id,string &rmessage){
 }
 
 void _getMessage_(int topic_index,int id,string &message){
+	message.clear();
 	errCode = -1;
 	int subs_index = -1;
 	if(!isRegisteredSubs(id,topic_index,subs_index))
