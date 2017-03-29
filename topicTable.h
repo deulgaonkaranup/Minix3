@@ -1,10 +1,7 @@
 #include <stdio.h>
-#include <iostream>
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
-#include <mutex>
-#include "errorMsg.h"
 #include "linkedList.h"
 
 #define MAX_TOPICS 5
@@ -14,7 +11,9 @@
 #define MAX_TOPIC_LENGTH 1024
 #define MAX_MESSAGE_LENGTH 5000
 
-using namespace std;
+#define MAX_TOPIC_REACHED 1
+#define TOPIC_NOT_FOUND 2
+#define MAX_MESSAGES_REACHED 3 
 
 extern int errCode;
 

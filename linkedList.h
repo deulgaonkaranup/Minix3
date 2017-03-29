@@ -1,10 +1,7 @@
 #include<stdio.h>
-#include<iostream>
 #include<stdlib.h>
 #include<unistd.h>
 #include "Node.h"
-
-using namespace std;
 
 template<typename type> class linkedList{
 
