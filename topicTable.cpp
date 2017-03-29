@@ -10,11 +10,7 @@ _sys_subscribers_list subscribers;
 _sys_publishers_list publishers;
 _sys_message_list msgList;
 
-<<<<<<< HEAD
 void _initialize_(){
-=======
-void __initialize__(){
->>>>>>> ddf0d68c194a5b6e7c126e6c35014c9d0a2d8832
 	
 	errCode = -1;
 
@@ -31,45 +27,27 @@ void __initialize__(){
 	msgList.index = -1;
 }
 
-<<<<<<< HEAD
 int isValidTopic(const char *name){
 	for(int i=0;i<=tList.index;i++){
 		if(strcmp(name, tList.topics[i].name))
-=======
-int isValidTopic(string name){
-	for(int i=0;i<=tList.index;i++){
-		if(name.compare(tList.topics[i].name) == 0)
->>>>>>> ddf0d68c194a5b6e7c126e6c35014c9d0a2d8832
 			return i;
 	}
 	return -1;
 }
 
-<<<<<<< HEAD
 int topiclookup(char *name){
-=======
-int _topicLookup_(string name){
->>>>>>> ddf0d68c194a5b6e7c126e6c35014c9d0a2d8832
 	int index = -1;
 	if((index = isValidTopic(name)) != -1)
 		return index;
 	return TOPIC_NOT_FOUND;
 }
 
-<<<<<<< HEAD
 void createtopic(int id,const char *tName){
-=======
-void _createTopic_(int id,string tName){
->>>>>>> ddf0d68c194a5b6e7c126e6c35014c9d0a2d8832
 	errCode = -1;
 	topic_blk.lock();
 	if((tList.index+1) < MAX_TOPICS){
 		tList.index++;
-<<<<<<< HEAD
 		strcpy(tList.topics[tList.index].name,tName);
-=======
-		tName.copy(tList.topics[tList.index].name,MAX_TOPIC_LENGTH);
->>>>>>> ddf0d68c194a5b6e7c126e6c35014c9d0a2d8832
 		tList.topics[tList.index].owner_id = id;
 	}else{
 		errCode = MAX_TOPIC_REACHED;
@@ -115,22 +93,14 @@ bool isRegisteredSubs(int id,int tIndex,int &topic_index){
 	return false;
 }
 
-<<<<<<< HEAD
 void tsubscriber(int id,const char *name){
-=======
-void _topicSubscriber_(int id,string name){
->>>>>>> ddf0d68c194a5b6e7c126e6c35014c9d0a2d8832
 	errCode = -1;
 	int index = isValidTopic(name);
 	if(index == -1)
 		return;
 	
 	int tIndex = -1;
-<<<<<<< HEAD
 	if(isRegisteredSubs(id,index,tIndex)) //if user not part of subscriber but others exists then return tIndex else -1
-=======
-	if(isRegisteredSubs(id,index,tIndex)) 						//if user not part of subscriber but others exists then return tIndex else -1
->>>>>>> ddf0d68c194a5b6e7c126e6c35014c9d0a2d8832
 		return;
 	
 	if(tIndex == -1){
@@ -170,20 +140,12 @@ int getTopicIndexMessageList(int index){
 	return -1;
 }
 
-<<<<<<< HEAD
 void publishmessage(int topic_index,int id,char *message){
-=======
-void _publishMessage_(int topic_index,int id,string message){
->>>>>>> ddf0d68c194a5b6e7c126e6c35014c9d0a2d8832
 	errCode = -1;	
 	message_blk.lock();
 
 	int publisher_index = -1;
-<<<<<<< HEAD
 	if(!isRegisteredPub(id,topic_index,publisher_index))		//This checks both valid publisher and topic
-=======
-	if(!isRegisteredPub(id,topic_index,publisher_index)) 									//This checks both valid publisher and topic
->>>>>>> ddf0d68c194a5b6e7c126e6c35014c9d0a2d8832
 		return;
 		
 	int index = getTopicIndexMessageList(topic_index);
@@ -195,14 +157,7 @@ void _publishMessage_(int topic_index,int id,string message){
 			return;
 		msg.topic_index = topic_index;
 		msg.messages = new linkedList<_sys_message_internal>();
-<<<<<<< HEAD
 		strcpy(msgInternal.message,message);
-=======
-		if(message.length() > MAX_MESSAGE_LENGTH)
-			message.copy(msgInternal.message,MAX_MESSAGE_LENGTH);
-		else
-			message.copy(msgInternal.message,message.length());
->>>>>>> ddf0d68c194a5b6e7c126e6c35014c9d0a2d8832
 		getSubscriberIDs(topic_index,msgInternal.subscb_users,msgInternal.count);
 		msg.messages->getCount(msgCount);
 		if(msgCount == MAX_MESSAGES_PER_TOPIC){
@@ -216,11 +171,7 @@ void _publishMessage_(int topic_index,int id,string message){
 		if(msgCount == MAX_MESSAGES_PER_TOPIC){
 			errCode = MAX_MESSAGES_REACHED;
 		}else{
-<<<<<<< HEAD
 			strcpy(msgInternal.message,message);
-=======
-			message.copy(msgInternal.message,MAX_MESSAGE_LENGTH);
->>>>>>> ddf0d68c194a5b6e7c126e6c35014c9d0a2d8832
 			getSubscriberIDs(topic_index,msgInternal.subscb_users,msgInternal.count);
 			msgList.mList[index].messages->insert(msgInternal);
 		}
@@ -228,11 +179,7 @@ void _publishMessage_(int topic_index,int id,string message){
 	message_blk.unlock();
 }
 
-<<<<<<< HEAD
 bool _getMessage_(int index,int id,char *rmessage){
-=======
-bool __getMessage__(int index,int id,string &rmessage){
->>>>>>> ddf0d68c194a5b6e7c126e6c35014c9d0a2d8832
 	
 	int mIndex = -1;
 	for(int i = 0; i <= msgList.index; i++){
@@ -252,11 +199,7 @@ bool __getMessage__(int index,int id,string &rmessage){
 		msgList.mList[mIndex].messages->getNode(&msgInternal);
 		for(int j = 0; j < msgInternal->count; j++){
 			if(id == msgInternal->subscb_users[j]){
-<<<<<<< HEAD
 				strcpy(rmessage, msgInternal->message);
-=======
-				string buf(msgInternal->message);
->>>>>>> ddf0d68c194a5b6e7c126e6c35014c9d0a2d8832
 				msgInternal->subscb_users[j] = -1;
 				bool flag = false;
 				for(int k = 0; k < msgInternal->count;k++){
@@ -265,10 +208,6 @@ bool __getMessage__(int index,int id,string &rmessage){
 						break;
 					}
 				}
-<<<<<<< HEAD
-=======
-				rmessage = buf;
->>>>>>> ddf0d68c194a5b6e7c126e6c35014c9d0a2d8832
 				if(!flag)
 					msgList.mList[mIndex].messages->removeCurrent();
 				return true;
@@ -279,28 +218,16 @@ bool __getMessage__(int index,int id,string &rmessage){
 	return false;
 }
 
-<<<<<<< HEAD
 void getmessage(int topic_index,int id,char *message){
 	memset(message,0,MAX_MESSAGE_LENGTH);
-=======
-void _getMessage_(int topic_index,int id,string &message){
-	message.clear();
->>>>>>> ddf0d68c194a5b6e7c126e6c35014c9d0a2d8832
 	errCode = -1;
 	int subs_index = -1;
 	if(!isRegisteredSubs(id,topic_index,subs_index))
 		return;
-<<<<<<< HEAD
 	_getMessage_(topic_index,id,message);
 }
 
 void tpublisher(int id,char *name){
-=======
-	__getMessage__(topic_index,id,message);
-}
-
-void _topicPublisher_(int id,string name){
->>>>>>> ddf0d68c194a5b6e7c126e6c35014c9d0a2d8832
 	errCode = -1;
 	int index = isValidTopic(name);
 	if(index == -1)
