@@ -71,13 +71,19 @@ struct _sys_message_list{
 };
 
 /* private */
+<<<<<<< HEAD
 void _initialize_();
 int isValidTopic(const char *name);
+=======
+void __initialize__();
+int isValidTopic(string name);
+>>>>>>> ddf0d68c194a5b6e7c126e6c35014c9d0a2d8832
 bool isRegisteredPub(int id,int tIndex,int &topic_index);
 bool isRegisteredSubs(int id,int tIndex,int &topic_index);
 void copyArray(int *&dest,int *source, int length);
 void getSubscriberIDs(int tindex,int *&subs_ids,int &count);
 int getTopicIndexMessageList(int index);
+<<<<<<< HEAD
 bool _getMessage_(int index,int id,char *rmessage);
 
 /* public */
@@ -87,6 +93,17 @@ void tsubscriber(int id,const char *name);
 void publishmessage(int topic_index,int id,char *message);
 void getmessage(int topic_index,int id,char *message);
 void tpublisher(int id,char *name);
+=======
+bool __getMessage__(int index,int id,string &rmessage);
+
+/* public */
+int _topicLookup_(string name);
+void _createTopic_(int id,string tName);
+void _topicSubscriber_(int id,string name);
+void _publishMessage_(int topic_index,int id,string message);
+void _getMessage_(int topic_index,int id,string &message);
+void _topicPublisher_(int id,string name);
+>>>>>>> ddf0d68c194a5b6e7c126e6c35014c9d0a2d8832
 
 
 
