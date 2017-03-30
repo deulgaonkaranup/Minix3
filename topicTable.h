@@ -2,7 +2,9 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
-#include "linkedList.h"
+
+#define true 1
+#define false 0
 
 #define MAX_TOPICS 5
 #define MAX_MESSAGES_PER_TOPIC 5
@@ -17,6 +19,8 @@
 
 extern int errCode;
 
+typedef int bool;
+
 struct _sys_topic{
 	char name[MAX_TOPIC_LENGTH];
 	int owner_id;
@@ -24,7 +28,7 @@ struct _sys_topic{
 
 struct _sys_topic_list{
 	int index;
-	_sys_topic *topics;
+	struct _sys_topic topics[MAX_TOPICS];
 };
 
 struct _sys_msg_usr{
@@ -33,49 +37,49 @@ struct _sys_msg_usr{
 
 struct _sys_subscribers{	
 	int topic_index;
-	int *users;
+	int users[MAX_SUBSCRIBERS_PER_TOPIC];
 	int index;
 };
 
 struct _sys_subscribers_list{
-	_sys_subscribers *sList;
+	struct _sys_subscribers sList[MAX_TOPICS];
 	int index;
 };
 
 struct _sys_publishers{
 	int topic_index;
-	int *users;
+	int users[MAX_PUBLISHERS_PER_TOPIC];
 	int index;
 };
 
 struct _sys_publishers_list{
-	_sys_publishers *pList;
+	struct _sys_publishers pList[MAX_TOPICS];
 	int index;
 };
 
 struct _sys_message_internal{
 	char message[MAX_MESSAGE_LENGTH];
-	int *subscb_users;
+	int subscb_users[MAX_SUBSCRIBERS_PER_TOPIC];
 	int count;
+	bool deleted;
 };
 
 struct _sys_message{
 	int topic_index;
-	linkedList<_sys_message_internal> *messages;
+	struct _sys_message_internal messages[MAX_MESSAGES_PER_TOPIC];
+	int index;
 };
 
 struct _sys_message_list{
-	_sys_message *mList;
+	struct _sys_message mList[MAX_TOPICS];
 	int index;
 };
 
 /* private */
-void _initialize_();
 int isValidTopic(const char *name);
-bool isRegisteredPub(int id,int tIndex,int &topic_index);
-bool isRegisteredSubs(int id,int tIndex,int &topic_index);
-void copyArray(int *&dest,int *source, int length);
-void getSubscriberIDs(int tindex,int *&subs_ids,int &count);
+bool isRegisteredPub(int id,int tIndex,int *topic_index);
+bool isRegisteredSubs(int id,int tIndex,int *topic_index);
+void getSubscriberIDs(int tindex,int mlist_index,int msg_index);
 int getTopicIndexMessageList(int index);
 bool _getMessage_(int index,int id,char *rmessage);
 

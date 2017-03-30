@@ -75,6 +75,7 @@ void testMaxMessagesperTopic(){
 void testSubscribers(){
 	
 	char topic[MAX_TOPIC_LENGTH];
+	memset(topic,0,MAX_TOPIC_LENGTH);
 	strcpy(topic,"Technology");
 	
 	int index = topiclookup(topic);
@@ -82,6 +83,7 @@ void testSubscribers(){
 	tsubscriber(4,topic);
 	
 	char message[MAX_MESSAGE_LENGTH];
+	memset(message,0,MAX_MESSAGE_LENGTH);
 	strcpy(message,"Why Facebook copied Snapchat Interface??");
 	publishmessage(index,3,message);
 	
@@ -102,7 +104,7 @@ void testSubscribers(){
 	getmessage(index,4,rmsg);
 	printf("4:  ");
 	printf("%s",rmsg);
-	pritnf("\n\n");
+	printf("\n\n");
 	
 	getmessage(index,5,rmsg);
 	printf("5:  ");
@@ -112,7 +114,6 @@ void testSubscribers(){
 }
 
 int main(){
-	_initialize_();
 	testMaxTopicCreation();
 	testMaxMessagesperTopic();
 	testSubscribers();
