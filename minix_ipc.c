@@ -23,19 +23,19 @@ int topiclookup(char *name){
 	return TOPIC_NOT_FOUND;
 }
 
-void createtopic(int id,const char *tName){
+int createtopic(int id,const char *tName){
 	errCode = -1;
 	if(tList.index < MAX_TOPICS){
 		strcpy(tList.topics[tList.index++].name,tName);
 		tList.topics[tList.index].owner_id = id;
-	}else{
-		errCode = MAX_TOPIC_REACHED;
+		return 1;
 	}
+	return MAX_LIMIT_REACHED;
 }
 
 bool isRegisteredPub(int id,int tIndex,int *topic_index){
 
-   if(publishers.pList == NULL)
+   if(publishers.index == 0)
       return false;
 	int i,j;
    for(i = 0; i < publishers.index; i++){
@@ -54,7 +54,7 @@ bool isRegisteredPub(int id,int tIndex,int *topic_index){
 
 bool isRegisteredSubs(int id,int tIndex,int *topic_index){
 
-	if(subscribers.sList == NULL)
+	if(subscribers.index == 0)
 		return false;
 	int i,j;
 	for(i = 0; i < subscribers.index; i++){
@@ -71,27 +71,28 @@ bool isRegisteredSubs(int id,int tIndex,int *topic_index){
 	return false;
 }
 
-void tsubscriber(int id,const char *name){
+int tsubscriber(int id,const char *name){
 	errCode = -1;
 	int index = isValidTopic(name);
 	if(index == -1)
-		return;
+		return TOPIC_NOT_FOUND;
 	
 	int tIndex = -1;
 	if(isRegisteredSubs(id,index,&tIndex))
-		return;
+		return 1;
 	
 	if(tIndex == -1){
 		subscribers.sList[subscribers.index].topic_index = index;
 		subscribers.sList[subscribers.index].users[subscribers.sList[subscribers.index].index++] = id;
 		subscribers.index++;
-		return;
+		return 1;
 	}
 	
 	if(subscribers.sList[tIndex].index == MAX_SUBSCRIBERS_PER_TOPIC)
-		return;
+		return MAX_LIMIT_REACHED;
 	
 	subscribers.sList[tIndex].users[subscribers.sList[tIndex].index++] = id;
+	return 1;
 }
 
 void getSubscriberIDs(int tindex,int mlist_index,int msgs_index){
@@ -116,35 +117,25 @@ int getTopicIndexMessageList(int index){
 	return -1;
 }
 
-void publishmessage(int topic_index,int id,char *message){
+int publishmessage(int topic_index,int id,char *message){
 	
 	errCode = -1;	
 
 	int publisher_index = -1;
 	if(!isRegisteredPub(id,topic_index,&publisher_index)) 
-		return;
+		return USER_NOT_REGISTERED;
 		
 	int msg_index = getTopicIndexMessageList(topic_index);
-	//struct _sys_message msg;
-	//struct _sys_message_internal msgInternal;
 	if(msg_index == -1){
 		if(msgList.index == MAX_TOPICS)
-			return;
-		//msg.topic_index = topic_index;
-		//msg.messages = (struct _sys_message_internal *)calloc(sizeof(struct _sys_message_internal),MAX_MESSAGES_PER_TOPIC);
-		//msg.index = -1;
-		
+			return MAX_LIMIT_REACHED;
 		strcpy(msgList.mList[msgList.index].messages[0].message,message);
 		msgList.mList[msgList.index].index++;
 		msgList.mList[msgList.index].topic_index = topic_index;
 		msgList.mList[msgList.index].messages[0].deleted = false;
 		getSubscriberIDs(topic_index,msgList.index,0);
 		msgList.index++;
-		//strcpy(msgInternal.message,message);
-		//msgInternal.deleted = false;
-		//getSubscriberIDs(topic_index,&msgInternal.subscb_users,&msgInternal.count);
-		//msg.messages[++msg.index] = msgInternal;
-		//msgList.mList[++msgList.index] = msg;
+		return 1;
 	}else{
 		if(msgList.mList[msg_index].index == MAX_MESSAGES_PER_TOPIC){
 			int j;
@@ -155,11 +146,10 @@ void publishmessage(int topic_index,int id,char *message){
 					strcpy(msgList.mList[msg_index].messages[j].message,message);
 					getSubscriberIDs(topic_index,msg_index, j);
 					msgList.mList[msg_index].messages[j].deleted = false;
-					return;
+					return 1;
 				}
 			}
-			errCode = MAX_MESSAGES_REACHED;
-			return;
+			return MAX_LIMIT_REACHED;
 		}
 		int index = msgList.mList[msg_index].index;
 		memset(msgList.mList[msg_index].messages[index].message,0,MAX_MESSAGE_LENGTH);
@@ -168,11 +158,8 @@ void publishmessage(int topic_index,int id,char *message){
 		getSubscriberIDs(topic_index,msg_index, index);
 		msgList.mList[msg_index].messages[index].deleted = false;
 		msgList.mList[msg_index].index++;
-		//strcpy(msgInternal.message,message);
-		//getSubscriberIDs(topic_index,&msgInternal.subscb_users,&msgInternal.count);
-		//msgInternal.deleted = false;
-		//msgList.mList[index].messages[++msgList.mList[index].index] = msgInternal;
 	}
+	return 1;
 }
 
 bool _getMessage_(int index,int id,char *rmessage){
@@ -187,7 +174,7 @@ bool _getMessage_(int index,int id,char *rmessage){
 	}
 	int count;
 	
-	if(msgList.mList[mIndex].index == -1)
+	if(msgList.mList[mIndex].index == 0)
 		return false;
 	
 	struct _sys_message_internal msgInternal;
@@ -217,32 +204,38 @@ bool _getMessage_(int index,int id,char *rmessage){
 	return false;
 }
 
-void getmessage(int topic_index,int id,char *message){
+int getmessage(int topic_index,int id,char *message){
 	memset(message,0,MAX_MESSAGE_LENGTH);
 	errCode = -1;
 	int subs_index = -1;
 	if(!isRegisteredSubs(id,topic_index,&subs_index))
-		return;
-	_getMessage_(topic_index,id,message);
+		return USER_NOT_REGISTERED;
+	bool value;
+	value = _getMessage_(topic_index,id,message);
+	if(!value)
+		return NO_MORE_MESSAGES;
+	return 1;
 }
 
-void tpublisher(int id,char *name){
+int tpublisher(int id,char *name){
 	errCode = -1;
 	int index = isValidTopic(name);
 	if(index == -1)
-		return;
+		return TOPIC_NOT_FOUND;
 	
 	int tIndex = -1;
 	if(isRegisteredPub(id,index,&tIndex))
-		return;
+		return 1;
 
 	if(tIndex == -1){
 		publishers.pList[publishers.index].topic_index = index;
 		publishers.pList[publishers.index].users[publishers.pList[publishers.index].index++] = id;
 		publishers.index++;
-		return;
+		return 1;
 	}
 	if(publishers.pList[tIndex].index == MAX_PUBLISHERS_PER_TOPIC)
-		return;
+		return MAX_LIMIT_REACHED;
+	
 	publishers.pList[tIndex].users[publishers.pList[tIndex].index++] = id;
+	return 1;
 }

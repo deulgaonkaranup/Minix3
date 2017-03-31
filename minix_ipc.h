@@ -13,9 +13,10 @@
 #define MAX_TOPIC_LENGTH 1024
 #define MAX_MESSAGE_LENGTH 5000
 
-#define MAX_TOPIC_REACHED 1
-#define TOPIC_NOT_FOUND 2
-#define MAX_MESSAGES_REACHED 3 
+#define MAX_LIMIT_REACHED 101
+#define TOPIC_NOT_FOUND 102
+#define USER_NOT_REGISTERED 103
+#define NO_MORE_MESSAGES 104
 
 extern int errCode;
 
@@ -85,11 +86,8 @@ bool _getMessage_(int index,int id,char *rmessage);
 
 /* public */
 int topiclookup(char *name);
-void createtopic(int id,const char *tName);
-void tsubscriber(int id,const char *name);
-void publishmessage(int topic_index,int id,char *message);
-void getmessage(int topic_index,int id,char *message);
-void tpublisher(int id,char *name);
-
-
-
+int createtopic(int id,const char *tName);
+int tsubscriber(int id,const char *name);
+int publishmessage(int topic_index,int id,char *message);
+int getmessage(int topic_index,int id,char *message);
+int tpublisher(int id,char *name);

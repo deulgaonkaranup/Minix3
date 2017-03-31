@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "topicTable.h"
+#include "minix_ipc.h"
 
 char *string_return[]={
 	"SUCCESS_MESSAGING"
@@ -17,6 +17,21 @@ char *string_return[]={
 	"DUPLICATE_TOPIC"
 	"TOPICS_FULL"
 };
+
+
+void displayErrorCode(int code){
+	switch(code){
+		case 101: printf("\n Maximum Limit Reached. \n");
+					 break;
+		case 102: printf("\n Topic entered is not found. \n");
+					 break;
+		case 103: printf("\n User is not registered. \n");
+					 break;
+		case 104: printf("\n No Messages to retrieve. \n");
+					 break;
+		default: break;
+	}
+}
 
 int main(int argc, char** argv)
 {
@@ -51,7 +66,7 @@ int main(int argc, char** argv)
 					int id;
 					printf("\nEnter ID: ");
 					scanf("%d",&id);
-					createtopic(id,topic);
+					displayErrorCode(createtopic(id,topic));
                break;
             case 2:
                printf("\n--Topic Publisher Initiation (TopicPublisher)--\n");
@@ -59,7 +74,7 @@ int main(int argc, char** argv)
 					scanf("%d",&PublisherID);
 					printf("\nEnter a topic :");
 					scanf (" %[^\n]%*c", topicToPublish);
-					tpublisher(PublisherID,topicToPublish);
+					displayErrorCode(tpublisher(PublisherID,topicToPublish));
                break;
             case 3:
                printf("\n--Topic Subscriber Initiation (TopicSubscriber)--\n");
@@ -67,7 +82,7 @@ int main(int argc, char** argv)
 					scanf("%d",&SubscriberID);
 					printf("\nEnter a topic :");
 					scanf (" %[^\n]%*c", topicToSubscribe);
-					tsubscriber(SubscriberID,topicToSubscribe);
+					displayErrorCode(tsubscriber(SubscriberID,topicToSubscribe));
                break;
             case 4:
                printf("\n--Publish a message (Publish)--\n");
@@ -78,7 +93,9 @@ int main(int argc, char** argv)
 					printf("\nEnter a message :");
 					scanf (" %[^\n]%*c", msg);
 					int tindex = topiclookup(topic);
-					publishmessage(tindex,PublisherID,msg);
+					if(tindex == -1)
+						displayErrorCode(tindex);
+					displayErrorCode(publishmessage(tindex,PublisherID,msg));
                break;
             case 5:
                printf("\n--Retrieve a message (Retrieve)--\n");
@@ -88,10 +105,10 @@ int main(int argc, char** argv)
 					scanf (" %[^\n]%*c", topic);
 					int index = topiclookup(topic);
 					char msg[MAX_MESSAGE_LENGTH];
-					getmessage(index,SubscriberID,msg);
+					displayErrorCode(getmessage(index,SubscriberID,msg));
 					printf("\nMessage : %s\n", msg);
                break;
-            case 6:
+            /*case 6:
               	printf("\n--Show Topics Available (TopicLookup)--\n");
 					status = topiclookup(list_of_topics);
     				printf("\nRetrieved topics : \n");
@@ -100,7 +117,7 @@ int main(int argc, char** argv)
 						printf("%s\n", token);
 						token = strtok(NULL, ";");
 					}
-               break;
+               break;*/
             case 0:
                exit(0);
                break;
