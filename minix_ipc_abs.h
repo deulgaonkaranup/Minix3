@@ -16,14 +16,14 @@ int _topiccreate_(int id,char *name){
 
 int _topicsubscriber(int id,char *tname){
 	message m;
-	m.m1_p1 = name;
+	m.m1_p1 = tname;
 	m.m1_i1 = id;
 	return (_syscall(PM_PROC_NR,PM_TSUBSCRIBER,&m));
 }
 
 int _topicpublisher(int id,char *tname){
 	message m;
-	m.m1_p1 = name;
+	m.m1_p1 = tname;
 	m.m1_i1 = id;
 	return (_syscall(PM_PROC_NR,PM_TPUBLISHER,&m));
 }
