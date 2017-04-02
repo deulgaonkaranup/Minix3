@@ -12,13 +12,13 @@
 #define MAX_PUBLISHERS_PER_TOPIC 5
 #define MAX_TOPIC_LENGTH 1024
 #define MAX_MESSAGE_LENGTH 5000
+#define MAX_TOPIC_PAGE_SIZE 5
 
 #define MAX_LIMIT_REACHED 101
 #define TOPIC_NOT_FOUND 102
 #define USER_NOT_REGISTERED 103
 #define NO_MORE_MESSAGES 104
-
-extern int errCode;
+#define INVALID_INPUT 105
 
 typedef int bool;
 
@@ -84,10 +84,18 @@ void getSubscriberIDs(int tindex,int mlist_index,int msg_index);
 int getTopicIndexMessageList(int index);
 bool _getMessage_(int index,int id,char *rmessage);
 
+/* public Variables */
+struct _sys_topic_list tList;
+struct _sys_subscribers_list subscribers;
+struct _sys_publishers_list publishers;
+struct _sys_message_list msgList;
+int lookup_index;
+
 /* public */
-int topiclookup(char *name);
-int createtopic(int id,const char *tName);
-int tsubscriber(int id,const char *name);
-int publishmessage(int topic_index,int id,char *message);
-int getmessage(int topic_index,int id,char *message);
-int tpublisher(int id,char *name);
+void do_resetPage(void);
+int do_topiclookup(char *names);
+int do_createtopic(int id,const char *ame);
+int do_tsubscriber(int id,const char *name);
+int do_publish(char *tname,int id,char *message);
+int do_getmessage(char *tname,int id,char *message);
+int do_tpublisher(int id,char *name);

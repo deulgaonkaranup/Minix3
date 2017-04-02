@@ -3,22 +3,6 @@
 #include <stdlib.h>
 #include "minix_ipc.h"
 
-char *string_return[]={
-	"SUCCESS_MESSAGING"
-	"MAX_TOPIC_REACHED"
-	"TOPIC_NOT_FOUND"
-	"MAX_MESSAGES_REACHED"
-	"NULL_TOPICNAME_ERR"
-	"DUPLICATE_PUBLISHER"
-	"DUPLICATE_SUBSCRIBER"
-	"BUFFER_OVERFLOW"
-	"NOT_SUBSCRIBER_OF_TOPIC"
-	"BUFFER_UNDERFLOW"
-	"DUPLICATE_TOPIC"
-	"TOPICS_FULL"
-};
-
-
 void displayErrorCode(int code){
 	switch(code){
 		case 101: printf("\n Maximum Limit Reached. \n");
@@ -29,6 +13,8 @@ void displayErrorCode(int code){
 					 break;
 		case 104: printf("\n No Messages to retrieve. \n");
 					 break;
+		case 105: printf("\n Input passed is Invalid. \n");
+					 break;
 		default: break;
 	}
 }
@@ -36,7 +22,7 @@ void displayErrorCode(int code){
 int main(int argc, char** argv)
 {
     int status,PublisherID,SubscriberID,string_return;
-	 char choice,topic[MAX_TOPIC_LENGTH],topicToPublish[MAX_TOPIC_LENGTH],list_of_topics[MAX_TOPIC_LENGTH];
+	 char choice,topic[MAX_TOPIC_LENGTH],topicToPublish[MAX_TOPIC_LENGTH];
 	 char topicToSubscribe[MAX_TOPIC_LENGTH],publishMessage[MAX_TOPIC_LENGTH],msg[MAX_MESSAGE_LENGTH],msg1[MAX_MESSAGE_LENGTH];
     int usr_input = -1;
     
@@ -66,7 +52,7 @@ int main(int argc, char** argv)
 					int id;
 					printf("\nEnter ID: ");
 					scanf("%d",&id);
-					displayErrorCode(createtopic(id,topic));
+					displayErrorCode(do_createtopic(id,topic));
                break;
             case 2:
                printf("\n--Topic Publisher Initiation (TopicPublisher)--\n");
@@ -74,7 +60,7 @@ int main(int argc, char** argv)
 					scanf("%d",&PublisherID);
 					printf("\nEnter a topic :");
 					scanf (" %[^\n]%*c", topicToPublish);
-					displayErrorCode(tpublisher(PublisherID,topicToPublish));
+					displayErrorCode(do_tpublisher(PublisherID,topicToPublish));
                break;
             case 3:
                printf("\n--Topic Subscriber Initiation (TopicSubscriber)--\n");
@@ -82,7 +68,7 @@ int main(int argc, char** argv)
 					scanf("%d",&SubscriberID);
 					printf("\nEnter a topic :");
 					scanf (" %[^\n]%*c", topicToSubscribe);
-					displayErrorCode(tsubscriber(SubscriberID,topicToSubscribe));
+					displayErrorCode(do_tsubscriber(SubscriberID,topicToSubscribe));
                break;
             case 4:
                printf("\n--Publish a message (Publish)--\n");
@@ -92,10 +78,7 @@ int main(int argc, char** argv)
 					scanf (" %[^\n]%*c", topic);
 					printf("\nEnter a message :");
 					scanf (" %[^\n]%*c", msg);
-					int tindex = topiclookup(topic);
-					if(tindex == -1)
-						displayErrorCode(tindex);
-					displayErrorCode(publishmessage(tindex,PublisherID,msg));
+					displayErrorCode(do_publish(topic,PublisherID,msg));
                break;
             case 5:
                printf("\n--Retrieve a message (Retrieve)--\n");
@@ -103,21 +86,21 @@ int main(int argc, char** argv)
 					scanf("%d",&SubscriberID);
 					printf("\nEnter a topic :");
 					scanf (" %[^\n]%*c", topic);
-					int index = topiclookup(topic);
 					char msg[MAX_MESSAGE_LENGTH];
-					displayErrorCode(getmessage(index,SubscriberID,msg));
+					displayErrorCode(do_getmessage(topic,SubscriberID,msg));
 					printf("\nMessage : %s\n", msg);
                break;
-            /*case 6:
+            case 6:
               	printf("\n--Show Topics Available (TopicLookup)--\n");
-					status = topiclookup(list_of_topics);
+					char list_of_topics[MAX_TOPIC_LENGTH*MAX_TOPIC_PAGE_SIZE];
+					do_topiclookup(list_of_topics);
     				printf("\nRetrieved topics : \n");
-					char *token = strtok(list_of_topics, ";");
+					char *token = strtok(list_of_topics, ",");
 					while(token) {
 						printf("%s\n", token);
-						token = strtok(NULL, ";");
+						token = strtok(NULL, ",");
 					}
-               break;*/
+               break;
             case 0:
                exit(0);
                break;
